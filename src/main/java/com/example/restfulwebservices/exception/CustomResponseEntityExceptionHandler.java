@@ -1,8 +1,10 @@
 package com.example.restfulwebservices.exception;
 
 import com.example.restfulwebservices.user.UserNotFoundException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,8 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     @ExceptionHandler(Exception.class)
     public final ResponseEntity handleAllException(Exception ex, WebRequest wr) {
         ExceptionResponse response = new ExceptionResponse(new Date(), ex.getMessage(), wr.getDescription(false));
-        ResponseEntity exceptionResponseResponseEntity = new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseEntity exceptionResponseResponseEntity = new ResponseEntity<>(response,
+                HttpStatus.INTERNAL_SERVER_ERROR);
         return exceptionResponseResponseEntity;
     }
 
@@ -26,5 +29,12 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
         ExceptionResponse response = new ExceptionResponse(new Date(), ex.getMessage(), wr.getDescription(false));
         ResponseEntity exceptionResponseResponseEntity = new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         return exceptionResponseResponseEntity;
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ExceptionResponse exception = new ExceptionResponse(new Date(), "Validation Error", ex.getBindingResult().toString());
+        ResponseEntity response = new ResponseEntity(exception, HttpStatus.BAD_REQUEST);
+        return response;
     }
 }
