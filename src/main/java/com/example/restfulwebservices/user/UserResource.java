@@ -9,6 +9,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -19,8 +20,16 @@ public class UserResource {
     private UserDaoService service;
 
     @GetMapping(path = "/users")
-    public List<User> getAllUsers() {
-        return service.findAll();
+    public List<EntityModel<User>> getAllUsers() {
+        List<User> users = service.findAll();
+        List<EntityModel<User>> response = new ArrayList<>();
+        for (var user : users) {
+            EntityModel<User> entityModel = EntityModel.of(user);
+            WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getUser(user.getId()));
+            entityModel.add(webMvcLinkBuilder.withRel("url"));
+            response.add(entityModel);
+        }
+        return response;
     }
 
     @GetMapping(path = "/users/{id}")
