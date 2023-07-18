@@ -19,7 +19,7 @@ public class RestfulWebServicesApplication {
 
 
     @Bean
-    public LocaleResolver localeResolver() {
+    public LocaleResolver acceptHeaderLocaleResolver() {
         AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
         localeResolver.setDefaultLocale(Locale.US);
         return localeResolver;
